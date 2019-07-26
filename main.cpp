@@ -8,12 +8,12 @@
  
 Servo wheels(D5);
 BNO055 imu(PB_9, PB_8);
-Timer t;
-Timeout controltime;
+Ticker controltime;
 bool control_flag{false};
 
 RawSerial pc(USBTX, USBRX); // tx, rx
 
+// Interrupt service routine for the controller.
 void UpdateControlFlag() {
     control_flag = true;
 }
@@ -25,8 +25,8 @@ int main() {
     double control{0.5};
 
     // Pid parameters.
-    PIDControl pid(1.0, 0, 0);
-    pid.SetLimits(0, 0.5);
+    PIDControl pid(0.01, 0, 0);
+    pid.SetLimits(-0.5, 0.5);
     double balance_setpoint{0};
 
     // Attach timer to interrup routine.
@@ -45,17 +45,20 @@ int main() {
     pc.printf("%f, %f, %f\n", imu.euler.roll, imu.euler.pitch, imu.euler.yaw);
 
     // Main loop
+    double pidout{0};
+    double roll{0};
     while (true) {
         imu.get_angles();
-        // servo_val = (imu.euler.roll/180) + 0.5;
+        roll = imu.euler.roll;
         if (control_flag) {
-            control = pid.Compute(balance_setpoint, imu.euler.roll) + 0.5;
+            pidout = pid.Compute(balance_setpoint, -roll);
+            control = pidout + 0.5;
             control_flag = false;
         }
         
         wheels = control;
         if (count >= 500) {
-            pc.printf("%f, %f\n", servo_val, imu.euler.roll);
+            pc.printf("%f, %f\n", control, imu.euler.roll);
             count = 0;
         }
         count++;

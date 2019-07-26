@@ -12,7 +12,7 @@ PIDControl::PIDControl(double kp, double ki, double kd) {
 double PIDControl::Compute(double setpoint, double current) {
     double error = setpoint - current;
     integral_sum_ += error * pid_params.ts;
-    double control = pid_params.kp* error + pid_params.ki * integral_sum_ + pid_params.kd * ((error - previous_error_)/pid_params.ts);
+    double control = pid_params.kp * error + pid_params.ki * integral_sum_ + pid_params.kd * ((error - previous_error_)/pid_params.ts);
 
     // Save the error for good luck.
     previous_error_ = error;
