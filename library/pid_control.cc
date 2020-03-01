@@ -28,6 +28,25 @@ double PIDControl::Compute(double setpoint, double current) {
     return control;
 }
 
+double PIDControl::ComputeWVelocity(double setpoint, double current, double velocity) {
+    double error = setpoint - current;
+    integral_sum_ += error * pid_params.ts;
+    double control = pid_params.kp * error + pid_params.ki * integral_sum_ + pid_params.kd * velocity;
+
+    // Save the error for good luck.
+    previous_error_ = error;
+
+    // Saturate the control output.
+    if (control > pid_params.max_clamp) {
+        control = pid_params.max_clamp;
+    }
+    else if (control < pid_params.min_clamp) {
+        control = pid_params.min_clamp;
+    }
+    
+    return control;
+}
+
 void PIDControl::SetGains(double kp, double ki, double kd) {
     pid_params.kp = kp;
     pid_params.ki = ki;

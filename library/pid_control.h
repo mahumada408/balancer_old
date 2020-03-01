@@ -19,6 +19,8 @@ class PIDControl {
         // Main cpid control algorithm.
         double Compute(double setpoint, double current);
 
+        double ComputeWVelocity(double setpoint, double current, double velocity);
+
         // Set the gains for the controller.
         void SetGains(double kp, double ki, double kd);
 
