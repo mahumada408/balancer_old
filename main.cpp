@@ -30,7 +30,7 @@ int main() {
 
     // Pid parameters.
     // 0.015, 0.0, 0.000015
-    PIDControl pid(0.012, 0.0, 0.00001);
+    PIDControl pid(0.012, 0.1, 0.00001);
     pid.SetLimits(-0.5, 0.5);
     PIDControl::Parameters pid_params;
 
